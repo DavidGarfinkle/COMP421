@@ -55,3 +55,5 @@ CREATE TABLE Trigram (
 	pitch_type VARCHAR(20),
 	document_frequency INT
 );
+
+INSERT INTO Corpus (name) VALUES ('elvis');
