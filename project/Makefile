@@ -2,10 +2,17 @@
 DBSTRING = --host localhost --user postgres
 
 clean:
+	rm m21-*
+	rm *.xml
+
+drop:
 	psql ${DBSTRING} -f drop_tables.sql
 
 all: 
+	make drop
 	make q2 q3
+	python3 parse_piece.py /Users/davidgarfinkle/elvis-project/elvisdump/MEI/000000000000005_Absalon-fili-mi_Josquin-Des-Prez_file5.mei
+	make clean
 
 q2:
 	psql ${DBSTRING} -f 000_schema.sql
