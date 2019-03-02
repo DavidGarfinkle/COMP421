@@ -43,7 +43,7 @@ def to_part_sql(m21_score, piece_id):
 	for part in parts:
 		values.append((part.partName, piece_id))
 	
-	return "INSERT INTO Part(name, piece) VALUES {}".format(tuples_to_values_str(values))
+	return "INSERT INTO Part(name, piece) VALUES {}".format(tuples_to_values_str(values[:500]))
 
 def to_note_sql(m21_score, piece_id):
 
@@ -59,7 +59,7 @@ def to_note_sql(m21_score, piece_id):
 			note.offset + note.duration.quarterLength, music21.musedata.base40.pitchToBase40(note))
 		)
 	
-	return 'INSERT INTO Note(measure, "piece_id", piece_idx, onset, "offset", "pitch-b40") VALUES {}'.format(tuples_to_values_str(values))
+	return 'INSERT INTO Note(measure, "piece_id", piece_idx, onset, "offset", "pitch-b40") VALUES {}'.format(tuples_to_values_str(values[:500]))
 
 def to_trigram_sql(m21_score, piece_id):
 	notes = list(NotePointSet(m21_score).flat.notes)
@@ -74,20 +74,22 @@ def to_trigram_sql(m21_score, piece_id):
 
 	# :todo find way to determine conflict (points has no comparison function)... i.e. use your own trigram serial counter?
 	#return 'INSERT INTO Trigram(points, pitch_type, document_frequency) VALUES {} ON CONFLICT (id) DO UPDATE SET document_frequency = Trigram.document_frequency + 1'.format(tuples_to_values_str(values))
-	return 'INSERT INTO Trigram(points, pitch_type, document_frequency) VALUES {}'.format(tuples_to_values_str(values))
+	return 'INSERT INTO Trigram(points, pitch_type, document_frequency) VALUES {}'.format(tuples_to_values_str(values[:500]))
 
 def to_interval_sql(m21_score, piece_id, window=5):
 	notes = list(NotePointSet(m21_score).flat.notes)
 	values = []
 	for idx in range(len(notes)):
-		triplet = notes[idx:idx+3]
-		if len(triplet) < 3: continue
+		note_pairs = []
+		for w in range(window): 
+			if idx + w > len(notes) - 1: continue
+			note_pairs.append((notes[idx], notes[idx + w]))
+		intervals = [(right.offset - left.offset, music21.musedata.base40.pitchToBase40(right) - music21.musedata.base40.pitchToBase40(left)) for left, right in note_pairs]
 
-		string = '"({})", "({})", "({})"'.format(*(
-			", ".join([str(note.offset), str(music21.musedata.base40.pitchToBase40(note))]) for note in triplet))
-		values.append(('{' + string + '}', 'pitch-b40', 1))
+		for interval in intervals:
+			values.append(('(' + "{}, {}".format(str(interval[0]), str(interval[1])) + ')', 'pitch-b40'))
 
-	return 'INSERT INTO Trigram(points, pitch_type, document_frequency) VALUES {} ON CONFLICT DO UPDATE SET document_frequency = document_frequency + 1'.format(tuples_to_values_str(values))
+	return 'INSERT INTO Interval(point, pitch_type) VALUES {}'.format(tuples_to_values_str(values[:500]))
 
 def parse_piece_path(piece_path):
 	base, fmt = os.path.splitext(piece_path)
@@ -116,8 +118,8 @@ def insert_piece(piece_path):
 		lambda: to_measure_sql(m21_score, piece_id),
 		lambda: to_part_sql(m21_score, piece_id),
 		lambda: to_note_sql(m21_score, piece_id),
-		lambda: to_trigram_sql(m21_score, piece_id)
-		#lambda: to_interval_sql(m21_score, piece_id)
+		lambda: to_trigram_sql(m21_score, piece_id),
+		lambda: to_interval_sql(m21_score, piece_id)
 	]
 	
 	for insert in lazy_inserts:

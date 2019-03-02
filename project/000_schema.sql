@@ -1,1 +1,2 @@
 CREATE SCHEMA IF NOT EXISTS cs421g76;
+ALTER DATABASE postgres SET search_path=cs421g76;
