@@ -61,6 +61,35 @@ def to_note_sql(m21_score, piece_id):
 	
 	return 'INSERT INTO Note(measure, "piece_id", piece_idx, onset, "offset", "pitch-b40") VALUES {}'.format(tuples_to_values_str(values))
 
+def to_trigram_sql(m21_score, piece_id):
+	notes = list(NotePointSet(m21_score).flat.notes)
+	values = []
+	for idx in range(len(notes)):
+		triplet = notes[idx:idx+3]
+		if len(triplet) < 3: continue
+
+		string = '"({})", "({})", "({})"'.format(*(
+			", ".join([str(note.offset), str(music21.musedata.base40.pitchToBase40(note))]) for note in triplet))
+		values.append(('{' + string + '}', 'pitch-b40', 1))
+
+	# :todo find way to determine conflict (points has no comparison function)... i.e. use your own trigram serial counter?
+	#return 'INSERT INTO Trigram(points, pitch_type, document_frequency) VALUES {} ON CONFLICT (id) DO UPDATE SET document_frequency = Trigram.document_frequency + 1'.format(tuples_to_values_str(values))
+	return 'INSERT INTO Trigram(points, pitch_type, document_frequency) VALUES {}'.format(tuples_to_values_str(values))
+
+"""
+def to_interval_sql(m21_score, piece_id, window=5):
+	notes = list(NotePointSet(m21_score).flat.notes)
+	values = []
+	for idx in range(len(notes)):
+		triplet = notes[idx:idx+3]
+		if len(triplet) < 3: continue
+
+		string = '"({})", "({})", "({})"'.format(*(
+			", ".join([str(note.offset), str(music21.musedata.base40.pitchToBase40(note))]) for note in triplet))
+		values.append(('{' + string + '}', 'pitch-b40', 1))
+
+	return 'INSERT INTO Trigram(points, pitch_type, document_frequency) VALUES {} ON CONFLICT DO UPDATE SET document_frequency = document_frequency + 1'.format(tuples_to_values_str(values))
+	"""
 
 def parse_piece_path(piece_path):
 	base, fmt = os.path.splitext(piece_path)
@@ -87,7 +116,9 @@ def insert_piece(piece_path):
 		lambda: to_piece_sql(piece_id, name, composer, corpus, fmt, data),
 		lambda: to_measure_sql(m21_score, piece_id),
 		lambda: to_part_sql(m21_score, piece_id),
-		lambda: to_note_sql(m21_score, piece_id)
+		lambda: to_note_sql(m21_score, piece_id),
+		lambda: to_trigram_sql(m21_score, piece_id)
+		#lambda: to_interval_sql(m21_score, piece_id)
 	]
 	
 	for insert in lazy_inserts:
