@@ -32,5 +32,8 @@ q3:
 	psql ${DBSTRING} -f 002_insert_composers.sql > p2_output/q3_1
 	psql ${DBSTRING} -c "SELECT * FROM Composer" > p2_output/q3_2
 
+q4:
+	psql ${DBSTRING} -f 006_q4.sql > p2_output/q4
+
 q5:
 	psql --host localhost --user postgres -f 003_q5.sql > p2_output/q5
