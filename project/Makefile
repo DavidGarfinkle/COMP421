@@ -15,7 +15,11 @@ drop:
 all: 
 	make drop
 	make q2 q3
-	python3 parse_piece.py /Users/davidgarfinkle/elvis-project/elvisdump/XML/000000000000906_Et-trop-penser_Josquin-Des-Prez_file3.xml
+	python3 parse_piece.py pieces/000000000000906_Et-trop-penser_Josquin-Des-Prez_file3.xml
+	python3 parse_piece.py pieces/000000000004422_Missa-L-homme-arme_Agnus-dei-1_Du-Fay-Guillaume_file2.xml
+	python3 parse_piece.py pieces/000000000006010_Missa-Nuncqua-fue-pena-maior_Gloria_La-Rue-Pierre-de_file1.xml
+	python3 parse_piece.py pieces/000000000010001_Innsbruck-ich-mu-dich-lassen_Isaac-Henricus_file3.xml
+	python3 parse_piece.py pieces/000000000010132_Esclave-puist-yl_Binchois-Gilles-de-Bins-dit_file1.xml
 	make clean
 	make rdump
 
@@ -27,3 +31,6 @@ q2:
 q3:
 	psql ${DBSTRING} -f 002_insert_composers.sql > p2_output/q3_1
 	psql ${DBSTRING} -c "SELECT * FROM Composer" > p2_output/q3_2
+
+q5:
+	psql --host localhost --user postgres -f 003_q5.sql > p2_output/q5
