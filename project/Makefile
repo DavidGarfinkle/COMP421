@@ -11,7 +11,7 @@ drop:
 all: 
 	make drop
 	make q2 q3
-	python3 parse_piece.py /Users/davidgarfinkle/elvis-project/elvisdump/MEI/000000000000005_Absalon-fili-mi_Josquin-Des-Prez_file5.mei
+	python3 parse_piece.py /Users/davidgarfinkle/elvis-project/elvisdump/XML/000000000000906_Et-trop-penser_Josquin-Des-Prez_file3.xml
 	make clean
 
 q2:

@@ -43,11 +43,11 @@ CREATE TABLE Note (
 	piece_id INT REFERENCES Piece(id),
 	part INT REFERENCES Part(id),
 	piece_idx INT NOT NULL,
-	onset INT NOT NULL,
-	"offset" INT NOT NULL,
-	"pitch-b7" INT,
-	"pitch-b12" INT,
-	"pitch-b40" INT
+	onset REAL NOT NULL,
+	"offset" REAL NOT NULL,
+	"pitch-b7" REAL,
+	"pitch-b12" REAL,
+	"pitch-b40" REAL
 );
 CREATE TABLE Trigram (
 	id SERIAL PRIMARY KEY,

@@ -1,3 +1,5 @@
 music21
 psycopg2
 ipython
+-e git://github.com/davidgarfinkle/smr.git@develop#egg=smr&subdirectory=smr_search
+pandas

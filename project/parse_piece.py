@@ -3,10 +3,14 @@ import base64
 import os
 import psycopg2
 import music21
+from smr_search.indexers import NotePointSet
 
 #DBCONN = "dbname=cs421 user=cs421g76"
 DBCONN = "host=localhost user=postgres"
 CONN = psycopg2.connect(DBCONN)
+
+def tuples_to_values_str(tuples):
+	return "('" + "'), ('".join(["', '".join([str(elt) for elt in tpl]) for tpl in tuples]) + "')"
 
 def to_piece_sql(piece_id, name, composer, corpus, encoding, data):
 	sql_str = "INSERT INTO Piece (id, encoding, composer, corpus, name, data) VALUES ('{}', '{}', '{}', '{}', '{}', '{}');".format(piece_id, encoding, composer, corpus, name, data)
@@ -28,9 +32,35 @@ def to_measure_sql(m21_score, piece_id):
 			data = base64.b64encode(f.read()).decode('utf-8')
 		values.append((measure.number, piece_id, data))
 	
-	return "INSERT INTO Measure(num, piece, data) VALUES ('{}')".format(
-		"'), ('".join(["', '".join([str(elt) for elt in tpl]) for tpl in values])
-	)
+	return "INSERT INTO Measure(num, piece, data) VALUES {}".format(tuples_to_values_str(values))
+
+def to_part_sql(m21_score, piece_id):
+	"""
+	Extracts parts from m21_score
+	"""
+	parts = list(m21_score.recurse(classFilter=['Part']))
+	values = []
+	for part in parts:
+		values.append((part.partName, piece_id))
+	
+	return "INSERT INTO Part(name, piece) VALUES {}".format(tuples_to_values_str(values))
+
+def to_note_sql(m21_score, piece_id):
+
+	notes = list(NotePointSet(m21_score).flat.notes)
+
+	def note_to_measure_num(note):
+		return list(m21_score.makeMeasures().getElementsByOffset(note.offset, mustBeginInSpan=False))[0].number
+
+	values = []
+	for idx, note in enumerate(notes):
+		values.append(
+			(note_to_measure_num(note), piece_id, idx, note.offset, 
+			note.offset + note.duration.quarterLength, music21.musedata.base40.pitchToBase40(note))
+		)
+	
+	return 'INSERT INTO Note(measure, "piece_id", piece_idx, onset, "offset", "pitch-b40") VALUES {}'.format(tuples_to_values_str(values))
+
 
 def parse_piece_path(piece_path):
 	base, fmt = os.path.splitext(piece_path)
@@ -55,7 +85,9 @@ def insert_piece(piece_path):
 	lazy_inserts = [
 		lambda: to_composer_sql(composer),
 		lambda: to_piece_sql(piece_id, name, composer, corpus, fmt, data),
-		lambda: to_measure_sql(m21_score, piece_id)
+		lambda: to_measure_sql(m21_score, piece_id),
+		lambda: to_part_sql(m21_score, piece_id),
+		lambda: to_note_sql(m21_score, piece_id)
 	]
 	
 	for insert in lazy_inserts:
