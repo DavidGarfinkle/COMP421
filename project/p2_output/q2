@@ -1,0 +1,119 @@
+                    Table "cs421g76.composer"
+ Column |         Type          | Collation | Nullable | Default 
+--------+-----------------------+-----------+----------+---------
+ name   | character varying(80) |           | not null | 
+ birth  | integer               |           |          | 
+ death  | integer               |           |          | 
+Indexes:
+    "composer_pkey" PRIMARY KEY, btree (name)
+Referenced by:
+    TABLE "piece" CONSTRAINT "piece_composer_fkey" FOREIGN KEY (composer) REFERENCES composer(name)
+
+                                   Table "cs421g76.piece"
+  Column  |         Type          | Collation | Nullable |              Default              
+----------+-----------------------+-----------+----------+-----------------------------------
+ id       | integer               |           | not null | nextval('piece_id_seq'::regclass)
+ encoding | character(3)          |           |          | 
+ composer | character varying(80) |           | not null | 
+ corpus   | character varying(80) |           |          | 
+ name     | character varying(80) |           |          | 
+ data     | text                  |           |          | 
+Indexes:
+    "piece_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "piece_composer_fkey" FOREIGN KEY (composer) REFERENCES composer(name)
+    "piece_corpus_fkey" FOREIGN KEY (corpus) REFERENCES corpus(name)
+Referenced by:
+    TABLE "docvec" CONSTRAINT "docvec_piece_id_fkey" FOREIGN KEY (piece_id) REFERENCES piece(id)
+    TABLE "measure" CONSTRAINT "measure_piece_fkey" FOREIGN KEY (piece) REFERENCES piece(id)
+    TABLE "note" CONSTRAINT "note_piece_id_fkey" FOREIGN KEY (piece_id) REFERENCES piece(id)
+    TABLE "part" CONSTRAINT "part_piece_fkey" FOREIGN KEY (piece) REFERENCES piece(id)
+
+                     Table "cs421g76.corpus"
+ Column |         Type          | Collation | Nullable | Default 
+--------+-----------------------+-----------+----------+---------
+ name   | character varying(80) |           | not null | 
+ source | text                  |           |          | 
+Indexes:
+    "corpus_pkey" PRIMARY KEY, btree (name)
+Referenced by:
+    TABLE "piece" CONSTRAINT "piece_corpus_fkey" FOREIGN KEY (corpus) REFERENCES corpus(name)
+
+                             Table "cs421g76.note"
+  Column   |  Type   | Collation | Nullable |             Default              
+-----------+---------+-----------+----------+----------------------------------
+ id        | integer |           | not null | nextval('note_id_seq'::regclass)
+ measure   | integer |           |          | 
+ piece_id  | integer |           |          | 
+ part      | integer |           |          | 
+ piece_idx | integer |           | not null | 
+ onset     | real    |           | not null | 
+ offset    | real    |           | not null | 
+ pitch-b7  | real    |           |          | 
+ pitch-b12 | real    |           |          | 
+ pitch-b40 | real    |           |          | 
+Indexes:
+    "note_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "note_measure_fkey" FOREIGN KEY (measure) REFERENCES measure(id)
+    "note_part_fkey" FOREIGN KEY (part) REFERENCES part(id)
+    "note_piece_id_fkey" FOREIGN KEY (piece_id) REFERENCES piece(id)
+
+               Table "cs421g76.docvec"
+  Column   |  Type   | Collation | Nullable | Default 
+-----------+---------+-----------+----------+---------
+ piece_id  | integer |           | not null | 
+ dimension | integer |           | not null | 
+ vector    | real[]  |           |          | 
+Indexes:
+    "docvec_pkey" PRIMARY KEY, btree (piece_id)
+Foreign-key constraints:
+    "docvec_piece_id_fkey" FOREIGN KEY (piece_id) REFERENCES piece(id)
+
+                                        Table "cs421g76.interval"
+       Column       |         Type          | Collation | Nullable |               Default                
+--------------------+-----------------------+-----------+----------+--------------------------------------
+ id                 | integer               |           | not null | nextval('interval_id_seq'::regclass)
+ point              | point                 |           | not null | 
+ pitch_type         | character varying(20) |           |          | 
+ document_frequency | integer               |           |          | 
+Indexes:
+    "interval_pkey" PRIMARY KEY, btree (id)
+
+                           Table "cs421g76.measure"
+ Column |  Type   | Collation | Nullable |               Default               
+--------+---------+-----------+----------+-------------------------------------
+ id     | integer |           | not null | nextval('measure_id_seq'::regclass)
+ num    | integer |           | not null | 
+ piece  | integer |           |          | 
+ data   | text    |           |          | 
+Indexes:
+    "measure_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "measure_piece_fkey" FOREIGN KEY (piece) REFERENCES piece(id)
+Referenced by:
+    TABLE "note" CONSTRAINT "note_measure_fkey" FOREIGN KEY (measure) REFERENCES measure(id)
+
+                                  Table "cs421g76.part"
+ Column |         Type          | Collation | Nullable |             Default              
+--------+-----------------------+-----------+----------+----------------------------------
+ id     | integer               |           | not null | nextval('part_id_seq'::regclass)
+ name   | character varying(20) |           |          | 
+ piece  | integer               |           |          | 
+Indexes:
+    "part_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "part_piece_fkey" FOREIGN KEY (piece) REFERENCES piece(id)
+Referenced by:
+    TABLE "note" CONSTRAINT "note_part_fkey" FOREIGN KEY (part) REFERENCES part(id)
+
+                                        Table "cs421g76.trigram"
+       Column       |         Type          | Collation | Nullable |               Default               
+--------------------+-----------------------+-----------+----------+-------------------------------------
+ id                 | integer               |           | not null | nextval('trigram_id_seq'::regclass)
+ points             | point[]               |           | not null | 
+ pitch_type         | character varying(20) |           |          | 
+ document_frequency | integer               |           |          | 
+Indexes:
+    "trigram_pkey" PRIMARY KEY, btree (id)
+
