@@ -76,7 +76,6 @@ def to_trigram_sql(m21_score, piece_id):
 	#return 'INSERT INTO Trigram(points, pitch_type, document_frequency) VALUES {} ON CONFLICT (id) DO UPDATE SET document_frequency = Trigram.document_frequency + 1'.format(tuples_to_values_str(values))
 	return 'INSERT INTO Trigram(points, pitch_type, document_frequency) VALUES {}'.format(tuples_to_values_str(values))
 
-"""
 def to_interval_sql(m21_score, piece_id, window=5):
 	notes = list(NotePointSet(m21_score).flat.notes)
 	values = []
@@ -89,7 +88,6 @@ def to_interval_sql(m21_score, piece_id, window=5):
 		values.append(('{' + string + '}', 'pitch-b40', 1))
 
 	return 'INSERT INTO Trigram(points, pitch_type, document_frequency) VALUES {} ON CONFLICT DO UPDATE SET document_frequency = document_frequency + 1'.format(tuples_to_values_str(values))
-	"""
 
 def parse_piece_path(piece_path):
 	base, fmt = os.path.splitext(piece_path)
@@ -104,7 +102,8 @@ def parse_piece_path(piece_path):
 	return piece_id, name, composer, corpus, fmt
 
 def insert_piece(piece_path):
-	m21_score = music21.converter.parse(piece_path)
+	with open(piece_path, 'rb') as f:
+		m21_score = music21.converter.parse(f.read())
 
 	piece_id, name, composer, corpus, fmt = parse_piece_path(piece_path)
 
