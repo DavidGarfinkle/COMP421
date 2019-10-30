@@ -1,11 +1,7 @@
-             name             | count 
-------------------------------+-------
- Missa L homme arme           |   100
- Innsbruck ich mu dich lassen |   100
- Missa Nuncqua fue pena maior |   100
- Esclave puist yl             |   100
- Et trop penser               |   100
-(5 rows)
+      name      | count 
+----------------+-------
+ Et trop penser |   100
+(1 row)
 
  onset | pitch-b40 
 -------+-----------
@@ -57,13 +53,11 @@
 
  piece | num 
 -------+-----
-  4422 |  41
    906 |  18
    906 |  19
    906 |  20
    906 |  21
    906 |  22
- 10132 |  28
    906 |  23
    906 |  24
    906 |  25
@@ -72,11 +66,13 @@
    906 |  28
    906 |  29
    906 |  30
- 10132 |  29
    906 |  31
    906 |  32
    906 |  33
    906 |  34
+   906 |  35
+   906 |  36
+   906 |  37
 (20 rows)
 
       name      

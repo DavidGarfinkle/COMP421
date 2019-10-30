@@ -2,6 +2,7 @@ CREATE TABLE Composer (
 	name VARCHAR(80) PRIMARY KEY,
 	birth INT,
 	death INT
+	CHECK (birth < death)
 );
 CREATE TABLE Corpus (
 	name VARCHAR(80) PRIMARY KEY,
@@ -43,7 +44,7 @@ CREATE TABLE Note (
 	piece_id INT REFERENCES Piece(id),
 	part INT REFERENCES Part(id),
 	piece_idx INT NOT NULL,
-	onset REAL NOT NULL,
+	onset REAL NOT NULL CHECK (onset > 0),
 	"offset" REAL NOT NULL,
 	"pitch-b7" REAL,
 	"pitch-b12" REAL,

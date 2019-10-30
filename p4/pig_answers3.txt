@@ -1,0 +1,10 @@
+(a)
+
+The schema after the group-by looks like:
+
+group:tuple(origin_airport_id:int,dest_airport_id:int),flights:bag{:tuple(day:int,flight_number:chararray,tail_number:chararray,origin_airport_id:int,dest_airport_id:int,delay:int,distance:int)}
+
+
+(b)
+
+Pig script completed in 7 minutes, 3 seconds and 90 milliseconds (423090 ms)

@@ -6,6 +6,8 @@
  death  | integer               |           |          | 
 Indexes:
     "composer_pkey" PRIMARY KEY, btree (name)
+Check constraints:
+    "composer_check" CHECK (birth < death)
 Referenced by:
     TABLE "piece" CONSTRAINT "piece_composer_fkey" FOREIGN KEY (composer) REFERENCES composer(name)
 
@@ -38,26 +40,6 @@ Indexes:
     "corpus_pkey" PRIMARY KEY, btree (name)
 Referenced by:
     TABLE "piece" CONSTRAINT "piece_corpus_fkey" FOREIGN KEY (corpus) REFERENCES corpus(name)
-
-                             Table "cs421g76.note"
-  Column   |  Type   | Collation | Nullable |             Default              
------------+---------+-----------+----------+----------------------------------
- id        | integer |           | not null | nextval('note_id_seq'::regclass)
- measure   | integer |           |          | 
- piece_id  | integer |           |          | 
- part      | integer |           |          | 
- piece_idx | integer |           | not null | 
- onset     | real    |           | not null | 
- offset    | real    |           | not null | 
- pitch-b7  | real    |           |          | 
- pitch-b12 | real    |           |          | 
- pitch-b40 | real    |           |          | 
-Indexes:
-    "note_pkey" PRIMARY KEY, btree (id)
-Foreign-key constraints:
-    "note_measure_fkey" FOREIGN KEY (measure) REFERENCES measure(id)
-    "note_part_fkey" FOREIGN KEY (part) REFERENCES part(id)
-    "note_piece_id_fkey" FOREIGN KEY (piece_id) REFERENCES piece(id)
 
                Table "cs421g76.docvec"
   Column   |  Type   | Collation | Nullable | Default 
@@ -106,6 +88,28 @@ Foreign-key constraints:
     "part_piece_fkey" FOREIGN KEY (piece) REFERENCES piece(id)
 Referenced by:
     TABLE "note" CONSTRAINT "note_part_fkey" FOREIGN KEY (part) REFERENCES part(id)
+
+                             Table "cs421g76.note"
+  Column   |  Type   | Collation | Nullable |             Default              
+-----------+---------+-----------+----------+----------------------------------
+ id        | integer |           | not null | nextval('note_id_seq'::regclass)
+ measure   | integer |           |          | 
+ piece_id  | integer |           |          | 
+ part      | integer |           |          | 
+ piece_idx | integer |           | not null | 
+ onset     | real    |           | not null | 
+ offset    | real    |           | not null | 
+ pitch-b7  | real    |           |          | 
+ pitch-b12 | real    |           |          | 
+ pitch-b40 | real    |           |          | 
+Indexes:
+    "note_pkey" PRIMARY KEY, btree (id)
+Check constraints:
+    "note_onset_check" CHECK (onset > 0::double precision)
+Foreign-key constraints:
+    "note_measure_fkey" FOREIGN KEY (measure) REFERENCES measure(id)
+    "note_part_fkey" FOREIGN KEY (part) REFERENCES part(id)
+    "note_piece_id_fkey" FOREIGN KEY (piece_id) REFERENCES piece(id)
 
                                         Table "cs421g76.trigram"
        Column       |         Type          | Collation | Nullable |               Default               

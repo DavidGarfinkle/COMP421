@@ -29,6 +29,12 @@ INSERT INTO Place (name, population, mayorid) VALUES
 
 ALTER TABLE Person ADD birthplace TEXT REFERENCES Place(name);
 UPDATE Person SET birthplace = 'Montreal' WHERE pname = 'Rich';
-UPDATE Person SET birthplace = 'Boston' WHERE pname = 'Carl';
+UPDATE Person SET birthplace = 'Montreal' WHERE pname = 'Carl';
 UPDATE Person SET birthplace = 'Mont-Tremblant' WHERE pname = 'Louise';
 UPDATE Person SET birthplace = 'Philadelphia' WHERE pname = 'Applebaum';
+
+INSERT INTO LivesIn (pid, name) VALUES
+  (1, 'Montreal'),
+  (2, 'Boston'),
+  (3, 'Mont-Tremblant'),
+  (3, 'Montreal');

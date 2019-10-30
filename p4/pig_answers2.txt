@@ -1,0 +1,18 @@
+(a)
+This script required four jobs, the first generating two Maps. Other than that, every job generated one Map and one Reduce.
+
+The schema after the join looks lke:
+
+airplanes::carrier_code:chararray,airplanes::carrier_name:chararray,airplanes::tail_number:chararray,delayedFlights::day:int,delayedFlights::flight_number:chararray,delayedFlights::tail_number:chararray,delayedFlights::origin_airport_id:int,delayedFlights::dest_airport_id:int,delayedFlights::delay:int,delayedFlights::distance:int
+
+Pig script completed in 5 minutes, 34 seconds and 945 milliseconds (334945 ms)
+
+(b)
+
+In the first job, we generated two maps and four reduces
+In the second, one map and one reduce
+In the third and fourth, one map and four reduces
+
+Pig script completed in 2 minutes, 25 seconds and 741 milliseconds (145741 ms)
+
+The halving of query-time is in line with our expectations, given that we had nearly no parallelism in our first attempt. Our data is now being processed in parallel

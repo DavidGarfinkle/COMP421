@@ -21,23 +21,17 @@
   5 |   5 |   906
 (5 rows)
 
-  id   | encoding |          composer           | corpus |             name             
--------+----------+-----------------------------+--------+------------------------------
-   906 | xml      | Josquin Des Prez            | elvis  | Et trop penser
-  4422 | xml      | Agnus dei 1                 | elvis  | Missa L homme arme
-  6010 | xml      | Gloria                      | elvis  | Missa Nuncqua fue pena maior
- 10001 | xml      | Isaac Henricus              | elvis  | Innsbruck ich mu dich lassen
- 10132 | xml      | Binchois Gilles de Bins dit | elvis  | Esclave puist yl
-(5 rows)
+ id  | encoding |     composer     | corpus |      name      
+-----+----------+------------------+--------+----------------
+ 906 | xml      | Josquin Des Prez | elvis  | Et trop penser
+(1 row)
 
  id |   name   | piece 
 ----+----------+-------
   1 | Superius |   906
   2 | Tenor    |   906
   3 | Contra   |   906
-  4 | S        |  4422
-  5 | C        |  4422
-(5 rows)
+(3 rows)
 
  id | measure | piece_id | part | piece_idx | onset | offset | pitch-b7 | pitch-b12 | pitch-b40 
 ----+---------+----------+------+-----------+-------+--------+----------+-----------+-----------
